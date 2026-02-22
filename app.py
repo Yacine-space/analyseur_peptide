@@ -3,7 +3,7 @@ import numpy as np
 from flask import Flask, request, render_template
 import plotly.graph_objs as go
 import plotly.io as pio
-
+import os
 
 proprietes_aa = {
     "A": {"nom": "Alanine","code": "ALA","masse_moleculaire": 89.09, "hydrophilicte": -0.5, "type": "neutre"},

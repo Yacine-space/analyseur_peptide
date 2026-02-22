@@ -1,0 +1,167 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+    color: rgb(46, 46, 46);
+    background-color: rgb(234, 242, 249);
+    margin: 30px auto 30px;
+    justify-content: center;
+    align-items: center;
+    width: 70vmax;
+    border-radius: 6px;
+    border: solid 1px rgb(8, 131, 247);
+    padding: 25px;
+}
+
+h1{
+    color: rgb(3, 78, 148);
+    margin-bottom: 20px;
+}
+
+.formulaire{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+}
+
+.peptid{
+    height: 35px;
+    font-weight: bold;
+    color: rgb(3, 78, 148);
+    border: solid 2px rgb(3, 78, 148);
+    background-color: rgb(247, 247, 247);
+    padding: 5px;
+}
+
+.action_buttons{
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.submit_btn,
+.reset_btn,
+.pdf_btn{
+    padding: 8px 10px;
+    color: white;
+    font-weight: bold;
+    border: none;
+    width: fit-content;
+}
+
+.submit_btn{
+    background-color: rgb(3, 78, 148);
+}
+
+.reset_btn{
+    background-color: rgb(118, 118, 118);
+}
+
+.pdf_btn{
+    margin-top: 10px;
+    align-items: center;
+    background-color: rgb(16, 103, 186);
+}
+
+.longueur_pep{
+    margin-top: 20px;
+    margin-left: auto;
+}
+
+#number{
+    font-size: 23px;
+    color: rgb(3, 78, 148);
+    font-weight: bold;
+}
+
+.submit_btn:hover,
+.reset_btn:hover,
+.pdf_btn:hover{
+    cursor: pointer;
+    background-color: rgb(21, 136, 243);
+}
+
+.resultat{
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+ul{
+    list-style: none;
+    margin: 10px;
+}
+
+ul li{
+    border: solid 1px rgb(3, 78, 148);
+    padding: 5px;
+}
+
+.grid_1{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+    min-height: 400px;
+}
+
+#graph{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid_2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.list_resultat{
+    color: rgb(3, 78, 148);
+}
+.graph_hydro{
+
+    border: solid 1px rgb(3, 78, 148);
+    padding: 5px;
+    margin: 10px;
+}
+#titre_graph{
+    position: static;
+    margin-right: auto;
+    padding: 5px;
+    background-color: rgb(16, 103, 186);
+    color: white;
+    width: fit-content;
+}
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .container {
+        width: 100%;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        background: white;
+        padding: 0;
+    }
+
+    #graph .plotly-graph-div {
+        width: 100%;
+    }
+}

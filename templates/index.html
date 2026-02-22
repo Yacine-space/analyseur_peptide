@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Analyseur peptide</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Analyseur peptide</h1>
+        <form class="formulaire no-print" method="post">
+            <input type="text" class="peptid" name="peptid" placeholder="Entrez une sequence peptidique">
+            <div class="action_buttons">
+                <button class="submit_btn" type="submit">ANALYSER</button>
+                <button class="reset_btn" type="button" id="resetBtn">RESET</button>
+            </div>
+        </form>
+
+        
+        <button class="pdf_btn no-print" type="button" id="downloadPdfBtn">TELECHARGER PDF</button>
+
+        <div class="longueur_pep">Longueur de la séquence: <span id="number">{{ stat.length }}</span></div>
+        
+        <div class="resultat">
+            <ul>
+                <li>Code 1 lettre: <span class="list_resultat"><strong>{{ stat.letter_code_1 }}</strong></span></li>
+            </ul>
+
+            <ul class="grid_1">
+                
+                <li id="graph"><p id= "titre_graph">Charge nette</p>{{ graph1|safe }}</li>
+                <li>Code 3 lettres:<br><br><span class="list_resultat"><strong>{{ stat.letter_code_3 }}</strong></span></li>
+            </ul>
+            <ul class="grid_2">
+                <li>Poids moléculaire: <span class="list_resultat"><strong>{{ stat.poid_mol }}</strong></span></li>
+                <li>Point isolélectrique (pHi): <span class="list_resultat"><strong>{{ stat.phi }}</strong></span></li>
+                <li>Charge nette à pH 7.0: <span class="list_resultat"><strong>{{ stat.charge_nette_ph_7 }}</strong></span></li>
+                <li>Hydrophilicté moyenne: <span class="list_resultat"><strong>{{ stat.hydro_moy }}</strong></span></li>
+            </ul>
+            
+            <div class="graph_hydro"><p id = titre_graph>Hydorophilicité</p>{{ graph2|safe }}</div>
+        </div>
+        
+    </div>
+
+    <script>
+        const pdfBtn = document.getElementById("downloadPdfBtn")
+        if (pdfBtn) {
+            pdfBtn.addEventListener("click",() => {
+                window.print()
+            })
+        }
+
+        const resetBtn = document.getElementById("resetBtn")
+        if (resetBtn) {
+            resetBtn.addEventListener("click",() => {
+                window.location.href = "/"
+            })
+        }
+    </script>
+</body>
+</html>

@@ -248,4 +248,4 @@ def home():
     return(render_template("index.html", stat=stat, graph1=graph_1_html, graph2=graph_2_html))
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run()

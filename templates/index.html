@@ -10,7 +10,8 @@
     <div class="container">
         <h1>Analyseur peptide</h1>
         <form class="formulaire no-print" method="post">
-            <input type="text" class="peptid" name="peptid" placeholder="Entrez une sequence peptidique">
+            <input type="text" id="peptid" class="peptid" name="peptid" placeholder="Entrez une sequence peptidique">
+            <div class="block_error"  style="display: {{ 'flex' if error_message else 'none' }}"><img src="{{ url_for('static', filename='images/warning-svgrepo-com.svg') }}" alt="Logo"><p id="message_erreur">{{ error_message }}</p></div>
             <div class="action_buttons">
                 <button class="submit_btn" type="submit">ANALYSER</button>
                 <button class="reset_btn" type="button" id="resetBtn">RESET</button>
@@ -45,6 +46,7 @@
     </div>
 
     <script>
+
         const pdfBtn = document.getElementById("downloadPdfBtn")
         if (pdfBtn) {
             pdfBtn.addEventListener("click",() => {

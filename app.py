@@ -149,104 +149,106 @@ app = Flask(__name__)
 def home():
     seq_peptide=""
     stat= None
+    error_message = None
     graph_1_html= ""
     graph_2_html = ""
     if request.method == "POST":
         seq_peptide= request.form.get("peptid", "").strip().upper()
         if seq_peptide:
-            stat = {
-                "letter_code_1": seq_peptide,
-                'length': length_pep(seq_peptide),
-                "letter_code_3": letter_code(seq_peptide, proprietes_aa),
-                "poid_mol": masse_mol(seq_peptide, proprietes_aa),
-                "phi": calc_phi(seq_peptide, proprietes_aa),
-                "charge_nette_ph_7": charge_nette_ph_7(seq_peptide, proprietes_aa),
-                "hydro_moy":hydrophilie_moyenne(seq_peptide, proprietes_aa)
-            }
-            valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa)
+            invalides = sorted({aa for aa in seq_peptide if aa not in proprietes_aa})
 
-            fig_charge = go.Figure()
-            fig_charge.add_trace(go.Scatter(
-                x=valeurs_ph,
-                y=charges,
-                mode="lines",
-                line=dict(color="darkblue", width=3),
+            if invalides:
+                error_message = (
+                    "Les lettres suivantes ne correspondent a aucun acide amine valide : "
+                    + ", ".join(invalides)
+                )
+            else:
+                stat = {
+                    "letter_code_1": seq_peptide,
+                    'length': length_pep(seq_peptide),
+                    "letter_code_3": letter_code(seq_peptide, proprietes_aa),
+                    "poid_mol": masse_mol(seq_peptide, proprietes_aa),
+                    "phi": calc_phi(seq_peptide, proprietes_aa),
+                    "charge_nette_ph_7": charge_nette_ph_7(seq_peptide, proprietes_aa),
+                    "hydro_moy": hydrophilie_moyenne(seq_peptide, proprietes_aa)
+                }
+                valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa)
+
+                fig_charge = go.Figure()
+                fig_charge.add_trace(go.Scatter(
+                    x=valeurs_ph,
+                    y=charges,
+                    mode="lines",
+                    line=dict(color="darkblue", width=3),
                 ))
-            
-            fig_charge.update_layout(
-                xaxis=dict(
-                    title={
-                        'text': 'pH',
-                        'font': {"size": 14, "color": "black"},
-                    },
-                    range=[0, 14],
-                    dtick=1, #pas d e 1
-                    tickmode="linear",
-                    position= 0.5,
-                    showline= True,
-                    linecolor = "black",
 
-
-                ),
-                yaxis=dict(
-                    title={
-                        "text": "Charge nette",
-                        "font": {"size": 14, "color": 'black'},
-                    },
-                    range=[-6, 6],
-                    tickmode= "linear",
-                    position= 0.5,
-                    showline= True,
-                    linecolor = "black",
-
-                ),
-                margin=dict(
-                    l=8, 
-                    r=8,    
-                    t=8,   
-                    b=8     
-                ),
-                width = 400,
-                height=400    
-       
-            )
-
-
-            aa, hydrophilicte, couleur = aa_vs_hydrophilicte(seq_peptide, proprietes_aa)
-            positions = list(range(1, len(seq_peptide)))
-            fig_hydro = go.Figure()
-            fig_hydro.add_trace(go.Bar(
-                x=positions,
-                y=hydrophilicte,
-                marker_color=couleur,
-                text=aa,
-                hovertemplate="AA: %{text}<br>Value: %{y}<extra></extra>"
-
-                
-                ))
-            fig_hydro.update_layout(
-                yaxis= dict(zeroline=True),
-                xaxis=dict(
-                    dtick=1,
-                    tickmode="array",
-                    tickvals = positions,
-                    ticktext=aa,
+                fig_charge.update_layout(
+                    xaxis=dict(
+                        title={
+                            'text': 'pH',
+                            'font': {"size": 14, "color": "black"},
+                        },
+                        range=[0, 14],
+                        dtick=1,
+                        tickmode="linear",
+                        position=0.5,
+                        showline=True,
+                        linecolor="black",
                     ),
-                margin=dict(
-                    l=8, 
-                    r=8,    
-                    t=8,   
-                    b=8     
-                ),
-                template="simple_white",
+                    yaxis=dict(
+                        title={
+                            "text": "Charge nette",
+                            "font": {"size": 14, "color": 'black'},
+                        },
+                        range=[-6, 6],
+                        tickmode="linear",
+                        position=0.5,
+                        showline=True,
+                        linecolor="black",
+                    ),
+                    margin=dict(l=8, r=8, t=8, b=8),
+                    width=400,
+                    height=400
+                )
 
-            )
+                aa, hydrophilicte, couleur = aa_vs_hydrophilicte(seq_peptide, proprietes_aa)
+                positions = list(range(1, len(seq_peptide) + 1))
+                fig_hydro = go.Figure()
+                fig_hydro.add_trace(go.Bar(
+                    x=positions,
+                    y=hydrophilicte,
+                    marker_color=couleur,
+                    text=aa,
+                    hovertemplate="AA: %{text}<br>Value: %{y}<extra></extra>"
+                ))
+                fig_hydro.update_layout(
+                    yaxis=dict(zeroline=True),
+                    xaxis=dict(
+                        dtick=1,
+                        tickmode="array",
+                        tickvals=positions,
+                        ticktext=aa,
+                    ),
+                    margin=dict(l=8, r=8, t=8, b=8),
+                    template="simple_white",
+                )
 
-            FloatingPointError
-            graph_1_html = pio.to_html(fig_charge, full_html=False)
-            graph_2_html = pio.to_html(fig_hydro, full_html=False)
-    return(render_template("index.html", stat=stat, graph1=graph_1_html, graph2=graph_2_html))
+                graph_1_html = pio.to_html(fig_charge, full_html=False)
+                graph_2_html = pio.to_html(fig_hydro, full_html=False)
+    return render_template(
+        "index.html",
+        stat=stat,
+        graph1=graph_1_html,
+        graph2=graph_2_html,
+        error_message=error_message,
+        seq_peptide=seq_peptide,
+        acid_amine=sorted(proprietes_aa.keys())
+    )
 
 if __name__=="__main__":
+<<<<<<< HEAD
     port = int(os.environ.get("PORT", 5000))
     app.run()
+=======
+    app.run(debug=True)
+>>>>>>> 1e4f542 (Mise à jour du projet)

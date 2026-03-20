@@ -39,6 +39,32 @@ h1{
     padding: 5px;
 }
 
+#message_erreur{
+    display: flex;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #fff;
+
+    justify-content: center;
+}
+
+.block_error{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    background-color: rgba(177, 4, 4, 0.616);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.block_error img{
+
+    margin-right: 20px;
+    height: 30px;
+    color: #fff;
+    filter: brightness(0) invert(1);
+}
+
 .action_buttons{
     display: flex;
     justify-content: flex-end;

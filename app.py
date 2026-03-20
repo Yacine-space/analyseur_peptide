@@ -245,10 +245,6 @@ def home():
         acid_amine=sorted(proprietes_aa.keys())
     )
 
-if __name__=="__main__":
-<<<<<<< HEAD
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run()
-=======
-    app.run(debug=True)
->>>>>>> 1e4f542 (Mise à jour du projet)
+    app.run(host="0.0.0.0", port=port, debug=True)

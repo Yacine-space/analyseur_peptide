@@ -33,23 +33,23 @@ extremites = {
     "C_terminale": {"pKa": 2.0, "type": "acide"}
 }
 
-def ph(seq_peptide, proprietes_aa):
+def ph(seq_peptide, proprietes_aa, N_terminal, C_terminal):
     ph = -1
     d={}
     
     while ph<=13:
         ph+=1
         for aa in seq_peptide:
-            charge=infos_peptid(seq_peptide, proprietes_aa, ph)
+            charge=infos_peptid(seq_peptide, proprietes_aa, ph, N_terminal, C_terminal)
             d[ph]=charge
 
     return d
 
-def infos_peptid(seq_peptide, proprietes_aa,ph):
-
+def infos_peptid(seq_peptide, proprietes_aa,ph, N_terminal, C_terminal):
+    charge_N_term=0
+    charge_C_term=0
     fra_base=0
     fra_acide=0
-
     for aa in seq_peptide:
         if aa in proprietes_aa:
             if proprietes_aa[aa]["type"]=="acide":
@@ -64,25 +64,28 @@ def infos_peptid(seq_peptide, proprietes_aa,ph):
         charge_nette=fra_base-fra_acide
         charge_nette+= -1/(1+10**(2-ph)) #extrimité c-ter
         charge_nette+= 1/(1+10**(ph-9))  #extrimité N--ter
-        
+    charge_N_term, charge_C_term,_,_ = modification(N_terminal, C_terminal)   #ajout charges des modifications N et C term
+    charge_nette=charge_nette+charge_N_term+charge_C_term 
     return charge_nette
 
-def masse_mol(seq_peptide, proprietes_aa):
+def masse_mol(seq_peptide, proprietes_aa, N_terminal, C_terminal):
+    _,_,poids_mol_N,poids_mol_C=modification(N_terminal,C_terminal)
     masse_mol_tot=0
     for aa in seq_peptide:
         if aa in proprietes_aa:
             masse_mol_tot+=proprietes_aa[aa]["masse_moleculaire"]
 
     masse_mol_pep=masse_mol_tot-(len(seq_peptide)-1)*18.015 #soustraire les liaisons hydro
+    masse_mol_pep=masse_mol_pep+poids_mol_N+poids_mol_C #ajout masse moléculaire des modifications N et C term
     return masse_mol_pep
 
-def calc_phi(seq_peptide, proprietes_aa):
+def calc_phi(seq_peptide, proprietes_aa, N_terminal, C_terminal):
     ph=0
     e={}
     while ph<14:
         ph+=0.01
         ph= round(ph, 2)
-        phi=infos_peptid(seq_peptide, proprietes_aa, ph)
+        phi=infos_peptid(seq_peptide, proprietes_aa, ph, N_terminal, C_terminal)
         e[ph]=phi
         isoelectric_point=0
         peite_valeur_charge=float('inf')
@@ -103,8 +106,8 @@ def hydrophilie_moyenne(seq_peptide, proprietes_aa):
         hydro_moy= round(hydro_moy,2)
     return hydro_moy
 
-def charge_nette_ph_7(seq_peptide, proprietes_aa):
-    charge_nette= ph(seq_peptide, proprietes_aa)
+def charge_nette_ph_7(seq_peptide, proprietes_aa, N_terminal, C_terminal):
+    charge_nette= ph(seq_peptide, proprietes_aa, N_terminal, C_terminal)
     charge_nette_ph_7= charge_nette[7]
     charge_nette_ph_7= round(charge_nette_ph_7, 2)
     return charge_nette_ph_7
@@ -121,9 +124,9 @@ def letter_code(seq_peptide, proprietes_aa):
     letter_code_str="-".join(letter_code)
     return letter_code_str
 
-def charge_vs_ph(seq_peptide, proprietes_aa):
+def charge_vs_ph(seq_peptide, proprietes_aa, N_terminal, C_terminal):
     valeurs_ph= np.arange(0, 14.1, 0.1)
-    charges = [infos_peptid(seq_peptide, proprietes_aa, ph) for ph in valeurs_ph]
+    charges = [infos_peptid(seq_peptide, proprietes_aa, ph, N_terminal, C_terminal) for ph in valeurs_ph]
     return valeurs_ph, charges
 
 def aa_vs_hydrophilicte (seq_peptide, proprietes_aa):
@@ -143,17 +146,59 @@ def aa_vs_hydrophilicte (seq_peptide, proprietes_aa):
             couleur.append('grey')
     
     return aa_list, hydro_list, couleur
+
+def modification(N_terminal, C_terminal):
+    if N_terminal == "no_modif":
+        charge_N_term=0
+        poids_mol_N=0
+    elif N_terminal == "acetylation":
+        charge_N_term= -1
+        poids_mol_N= 43
+    elif N_terminal == "biotine":
+        charge_N_term= 0
+        poids_mol_N=28
+    elif N_terminal=="formylation":
+        charge_N_term= 0
+        poids_mol_N=28
+    elif N_terminal=="dansyl":
+        charge_N_term= 0
+        poids_mol_N=249
+    elif N_terminal=="pyroglutamate":
+        charge_N_term=-1
+        poids_mol_N=-18
+    if C_terminal=="no_modif":
+        charge_C_term=0
+        poids_mol_C=0
+    elif C_terminal== "amidation":
+        charge_C_term= 1
+        poids_mol_C= -17
+    elif C_terminal == "cyclisation":
+        charge_C_term= 0
+        poids_mol_C= -18
+    elif C_terminal=="esterification":
+        charge_C_term= 0
+        poids_mol_C= 14
+    elif C_terminal=="biotine":
+        charge_C_term= 0
+        poids_mol_C= 340
+    return charge_N_term, charge_C_term, poids_mol_N, poids_mol_C
+
+
 app = Flask(__name__)
 
 @app.route('/', methods=["GET", "POST"])
 def home():
     seq_peptide=""
     stat= None
+    N_terminal=""
+    C_terminal=""
     error_message = None
     graph_1_html= ""
     graph_2_html = ""
     if request.method == "POST":
         seq_peptide= request.form.get("peptid", "").strip().upper()
+        N_terminal= request.form.get("N_term", "")
+        C_terminal=request.form.get("C_term", "")
         if seq_peptide:
             invalides = sorted({aa for aa in seq_peptide if aa not in proprietes_aa})
 
@@ -167,12 +212,12 @@ def home():
                     "letter_code_1": seq_peptide,
                     'length': length_pep(seq_peptide),
                     "letter_code_3": letter_code(seq_peptide, proprietes_aa),
-                    "poid_mol": masse_mol(seq_peptide, proprietes_aa),
-                    "phi": calc_phi(seq_peptide, proprietes_aa),
-                    "charge_nette_ph_7": charge_nette_ph_7(seq_peptide, proprietes_aa),
+                    "poid_mol": masse_mol(seq_peptide, proprietes_aa, N_terminal, C_terminal),
+                    "phi": calc_phi(seq_peptide, proprietes_aa, N_terminal, C_terminal),
+                    "charge_nette_ph_7": charge_nette_ph_7(seq_peptide, proprietes_aa, N_terminal, C_terminal),
                     "hydro_moy": hydrophilie_moyenne(seq_peptide, proprietes_aa)
                 }
-                valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa)
+                valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa, N_terminal, C_terminal)
 
                 fig_charge = go.Figure()
                 fig_charge.add_trace(go.Scatter(
@@ -242,7 +287,9 @@ def home():
         graph2=graph_2_html,
         error_message=error_message,
         seq_peptide=seq_peptide,
-        acid_amine=sorted(proprietes_aa.keys())
+        acid_amine=sorted(proprietes_aa.keys()),
+        N_terminal=N_terminal,
+        C_terminal=C_terminal,
     )
 
 if __name__ == "__main__":

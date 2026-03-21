@@ -166,6 +166,11 @@ ul li{
 .list_resultat{
     color: rgb(3, 78, 148);
 }
+
+#code_one_letter{
+    overflow-wrap: anywhere;
+}
+
 .graph_hydro{
 
     border: solid 1px rgb(3, 78, 148);

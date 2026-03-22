@@ -310,7 +310,7 @@ h2{
     }
 }
 
-@media (min-width: 600px) {
+@media (max-width: 900px) {
     .grid_1{
         display: flex;
         flex-direction: column;

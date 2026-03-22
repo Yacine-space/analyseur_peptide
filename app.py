@@ -221,6 +221,71 @@ def solubilite(seq_peptide, N_terminal, C_terminal):
     elif score_solu<0:
         return "Faible solubilité (risque d'agrégation)"
 
+def graphique_hydrophilicite(seq_peptide):
+    aa, hydrophilicte, couleur = aa_vs_hydrophilicte(seq_peptide, proprietes_aa)
+    positions = list(range(1, len(seq_peptide) + 1))
+    fig_hydro = go.Figure()
+    fig_hydro.add_trace(go.Bar(
+        x=positions,
+        y=hydrophilicte,
+        marker_color=couleur,
+        text=aa,
+        hovertemplate="AA: %{text}<br>Value: %{y}<extra></extra>"
+    ))
+    fig_hydro.update_layout(
+        yaxis=dict(zeroline=True),
+        xaxis=dict(
+            dtick=1,
+            tickmode="array",
+            tickvals=positions,
+            ticktext=aa,
+        ),
+        margin=dict(l=8, r=8, t=8, b=8),
+        template="simple_white",
+    )
+    graph_2_html = pio.to_html(fig_hydro, full_html=False)
+    return graph_2_html
+
+def graphique_charge_ph(seq_peptide, N_terminal, C_terminal):
+    valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa, N_terminal, C_terminal)
+    fig_charge = go.Figure()
+    fig_charge.add_trace(go.Scatter(
+        x=valeurs_ph,
+        y=charges,
+        mode="lines",
+        line=dict(color="darkblue", width=3),
+    ))
+
+    fig_charge.update_layout(
+        xaxis=dict(
+            title={
+                'text': 'pH',
+                'font': {"size": 14, "color": "black"},
+            },
+            range=[0, 14],
+            dtick=1,
+            tickmode="linear",
+            position=0.5,
+            showline=True,
+            linecolor="black",
+        ),
+        yaxis=dict(
+            title={
+                "text": "Charge nette",
+                "font": {"size": 14, "color": 'black'},
+            },
+            range=[-6, 6],
+            tickmode="linear",
+            position=0.5,
+            showline=True,
+            linecolor="black",
+        ),
+        margin=dict(l=8, r=8, t=8, b=8),
+        width=400,
+        height=400
+    )
+    graph_1_html = pio.to_html(fig_charge, full_html=False)
+    return graph_1_html
 app = Flask(__name__)
 
 @app.route('/', methods=["GET", "POST"])
@@ -257,69 +322,32 @@ def home():
                     "solubilite": solubilite(seq_peptide, N_terminal, C_terminal)
 
                 }
-                valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa, N_terminal, C_terminal)
+                
+                # aa, hydrophilicte, couleur = aa_vs_hydrophilicte(seq_peptide, proprietes_aa)
+                # positions = list(range(1, len(seq_peptide) + 1))
+                # fig_hydro = go.Figure()
+                # fig_hydro.add_trace(go.Bar(
+                #     x=positions,
+                #     y=hydrophilicte,
+                #     marker_color=couleur,
+                #     text=aa,
+                #     hovertemplate="AA: %{text}<br>Value: %{y}<extra></extra>"
+                # ))
+                # fig_hydro.update_layout(
+                #     yaxis=dict(zeroline=True),
+                #     xaxis=dict(
+                #         dtick=1,
+                #         tickmode="array",
+                #         tickvals=positions,
+                #         ticktext=aa,
+                #     ),
+                #     margin=dict(l=8, r=8, t=8, b=8),
+                #     template="simple_white",
+                # )
 
-                fig_charge = go.Figure()
-                fig_charge.add_trace(go.Scatter(
-                    x=valeurs_ph,
-                    y=charges,
-                    mode="lines",
-                    line=dict(color="darkblue", width=3),
-                ))
-
-                fig_charge.update_layout(
-                    xaxis=dict(
-                        title={
-                            'text': 'pH',
-                            'font': {"size": 14, "color": "black"},
-                        },
-                        range=[0, 14],
-                        dtick=1,
-                        tickmode="linear",
-                        position=0.5,
-                        showline=True,
-                        linecolor="black",
-                    ),
-                    yaxis=dict(
-                        title={
-                            "text": "Charge nette",
-                            "font": {"size": 14, "color": 'black'},
-                        },
-                        range=[-6, 6],
-                        tickmode="linear",
-                        position=0.5,
-                        showline=True,
-                        linecolor="black",
-                    ),
-                    margin=dict(l=8, r=8, t=8, b=8),
-                    width=400,
-                    height=400
-                )
-
-                aa, hydrophilicte, couleur = aa_vs_hydrophilicte(seq_peptide, proprietes_aa)
-                positions = list(range(1, len(seq_peptide) + 1))
-                fig_hydro = go.Figure()
-                fig_hydro.add_trace(go.Bar(
-                    x=positions,
-                    y=hydrophilicte,
-                    marker_color=couleur,
-                    text=aa,
-                    hovertemplate="AA: %{text}<br>Value: %{y}<extra></extra>"
-                ))
-                fig_hydro.update_layout(
-                    yaxis=dict(zeroline=True),
-                    xaxis=dict(
-                        dtick=1,
-                        tickmode="array",
-                        tickvals=positions,
-                        ticktext=aa,
-                    ),
-                    margin=dict(l=8, r=8, t=8, b=8),
-                    template="simple_white",
-                )
-
-                graph_1_html = pio.to_html(fig_charge, full_html=False)
-                graph_2_html = pio.to_html(fig_hydro, full_html=False)
+                graph_1_html = graphique_charge_ph(seq_peptide,N_terminal,C_terminal)
+                graph_2_html = graphique_hydrophilicite(seq_peptide)
+                #pio.to_html(fig_hydro, full_html=False)
     return render_template(
         "index.html",
         stat=stat,

@@ -7,6 +7,9 @@
 body{
     background-color: rgba(255, 253, 253, 0.753);
 }
+a{
+    text-decoration: none;
+}
 .container{
     display: flex;
     position: relative;

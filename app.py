@@ -196,17 +196,20 @@ def coefficient_extinction(seq_peptide):
 def score_solubilite(seq_peptide, N_terminal, C_terminal):
     aa_hydrophobes = 0
     aa_polaires = 0
+    hydrophobes = set(['A', 'V', 'L', 'I', 'M', 'F', 'W'])
+    polaires = set(['S', 'T', 'N', 'Q', 'K', 'R', 'D', 'E'])
     for aa in seq_peptide:
-        if aa == "A" or "V" or 'L' or 'I' or 'M' or 'F' or 'W':
-            aa_hydrophobes+=1
-        elif aa == "S" or "T" or "N" or "Q" or"K" or "R" or "D" or "E":
-            aa_polaires+=1
+            if aa in hydrophobes:
+                aa_hydrophobes+=1
+            elif aa in polaires:
+                aa_polaires+=1
     longueur_pep = len(seq_peptide)
     pourc_hydrophobes = (aa_hydrophobes/longueur_pep)*100
     pourc_polaires = (aa_polaires/longueur_pep)*100
     charge_nette= charge_nette_ph_7(seq_peptide, proprietes_aa, N_terminal, C_terminal)
-    score_solubilite=(charge_nette*5)-pourc_hydrophobes+pourc_polaires
-    return score_solubilite
+    score_solu=(charge_nette*5)-pourc_hydrophobes+pourc_polaires
+    return score_solu
+
 def solubilite(seq_peptide, N_terminal, C_terminal):
     score_solu=score_solubilite(seq_peptide, N_terminal, C_terminal)
     if score_solu>100:

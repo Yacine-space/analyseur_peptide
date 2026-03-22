@@ -8,18 +8,31 @@ body{
     background-color: rgba(255, 253, 253, 0.753);
 }
 .container{
+    display: flex;
+    position: relative;
+    flex-direction: column;
     font-family: sans-serif;
     color: rgb(46, 46, 46);
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     margin: 30px auto 30px;
-
     width: 70vmax;
     border-radius: 6px;
     border: solid 1px rgb(3, 3, 3);
     padding: 25px;
 }
+
+#github_link{
+    position: absolute;
+    right: 30px;
+}
+
+#github_link img{
+    height: 35px;
+    width: 35px;
+}
+
 .container_form{
     display: flex;
     flex-direction: column;
@@ -79,6 +92,11 @@ h1{
     height: 30px;
     color: #fff;
     filter: brightness(0) invert(1);
+}
+
+#exemple_peptide{
+    font-size: 14px;
+    margin-top: 7px;
 }
 
 .action_buttons{
@@ -152,7 +170,7 @@ h2{
 .explication_propriete{
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    transition: max-height 0.3s ease-out,  padding 0.4s ease-out;
     background-color: #f9f9f9;
     padding: 0 15px;
     border-radius: 0 0 8px 8px;

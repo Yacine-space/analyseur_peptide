@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="static/images/favicon.png" type="image/png">
     <title>Analyseur de peptide</title>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <div class="container">
+        <a href="https://github.com/Yacine-space/analyseur_peptide.git" target="_blank" id="github_link"><img src="static/images/logo-github.png" alt="git_hub"></a>
         <div class="container_form">
             <h1>Analyseur de peptide</h1>
         <form class="formulaire no-print" method="post">
@@ -35,10 +37,9 @@
                         <option value="biotine"{% if C_terminal == "biotine" %}selected{% endif %}>Biotine</option>
                         
                     </select>
-
                 </div>
             </div>
-
+            <p id="exemple_peptide"><strong>Exemple:</strong> GNNRPVYIPQPRPPHPRI</p>
             <div class="block_error"  style="display: {{ 'flex' if error_message else 'none' }}"><img src="{{ url_for('static', filename='images/warning-svgrepo-com.svg') }}" alt="Logo"><p id="message_erreur">{{ error_message }}</p></div>
             <div class="action_buttons">
                 <button class="submit_btn" type="submit">ANALYSER</button>

@@ -319,4 +319,7 @@ h2{
         width: 100%;
     }
 
+    #github_link{
+        position: static;
+    }
 }

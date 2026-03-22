@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Analyseur peptide</title>
+    <title>Analyseur de peptide</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Analyseur peptide</h1>
+        <div class="container_form">
+            <h1>Analyseur de peptide</h1>
         <form class="formulaire no-print" method="post">
             <input type="text" id="peptid" class="peptid" name="peptid" placeholder="Entrez une sequence peptidique" value="{{ seq_peptide }}">
             <div class="modification">
@@ -44,11 +46,11 @@
             </div>
         </form>
 
-        
+    {% if stat %}    
         <button class="pdf_btn no-print" type="button" id="downloadPdfBtn">TELECHARGER PDF</button>
-
+     
         <div class="longueur_pep">Longueur de la séquence: <span id="number">{{ stat.length }}</span></div>
-        
+   
         <div class="resultat">
             <ul>
                 <li>Code 1 lettre: <span class="list_resultat" id="code_one_letter"><strong>{{ stat.letter_code_1 }}</strong></span></li>
@@ -60,15 +62,103 @@
                 <li>Code 3 lettres:<br><br><span class="list_resultat"><strong>{{ stat.letter_code_3 }}</strong></span></li>
             </ul>
             <ul class="grid_2">
-                <li>Poids moléculaire: <span class="list_resultat"><strong>{{ stat.poid_mol }}</strong></span></li>
+                <li>Poids moléculaire: <span class="list_resultat"><strong>{{ stat.poid_mol }}</strong></span> g/mol</li>
                 <li>Point isolélectrique (pHi): <span class="list_resultat"><strong>{{ stat.phi }}</strong></span></li>
                 <li>Charge nette à pH 7.0: <span class="list_resultat"><strong>{{ stat.charge_nette_ph_7 }}</strong></span></li>
                 <li>Hydrophilicté moyenne: <span class="list_resultat"><strong>{{ stat.hydro_moy }}</strong></span></li>
+                <li>Coefficient d'extinction: <span class="list_resultat"><strong>{{ stat.coefficient_extinction }}</strong></span> M<sup>-1</sup>cm<sup>-1</sup></li>
+                <li>Prédiction de solubilité: <span class="list_resultat"><strong>{{ stat.solubilite }}</strong></span></li>
             </ul>
             
             <div class="graph_hydro"><p id = titre_graph>Hydorophilicité</p>{{ graph2|safe }}</div>
         </div>
-        
+    {% endif %}  
+        </div>
+    
+        <div class="description_container">
+            <p class="desc_p">Cet outil permet d'analyser les<strong style="color: rgb(3, 78, 148);"> propriétés physico-chimiques</strong> d'un peptide à partir de sa séquence en acides aminés (code à une lettre). Il calcule notamment la<strong style="color: rgb(3, 78, 148);"> charge nette</strong> en fonction du pH, le<strong style="color: rgb(3, 78, 148);"> point isoélectrique</strong>, la<strong style="color: rgb(3, 78, 148);"> masse moléculaire</strong>, <strong style="color: rgb(3, 78, 148);">l'hydrophilie moyenne</strong>, le <strong style="color: rgb(3, 78, 148);">coefficient d'extinction molaire</strong> et estime la <strong style="color: rgb(3, 78, 148);">solubilité</strong>. Vous pouvez également sélectionner des modifications post-traductionnelles N-terminales  et C-terminales qui ajustent automatiquement la charge et la masse du peptide.</p>
+            <h2>Explication des propriétés calculées:</h2>
+            <div class="item_propriete">
+                <button class="propriete">Masse moléculaire<span class="arrow">&#9660;</span></button>
+                <div class="explication_propriete">
+                    <p>La masse moléculaire du peptide est calculée selon :</p>
+                        \[
+                        M_{peptide} = \sum M_{AA} - (n-1) \times 18.015 + M_{modifs}
+                        \]
+                </div>
+            </div>
+
+            <div class="item_propriete">
+                <button class="propriete">Point isoélectrique (pI)<span class="arrow">&#9660;</span></button>
+                <div class="explication_propriete">
+                    <p>pH pour lequel la charge nette du peptide est nulle:</p>
+                    \[
+                    Q(pH) \approx 0
+                    \]
+                </div>
+            </div>
+
+            <div class="item_propriete">
+                <button class="propriete">Charge nette à pH 7<span class="arrow">&#9660;</span></button>
+                <div class="explication_propriete">
+                    <p>La charge des groupements ionisables est calculée avec l'équation de Henderson-Hasselbalch.</p>
+                    <ul>
+                        <li>Pour un acide:</li>
+                        \[
+                        \alpha_{acide} = \frac{1}{1+10^(pK_a - pH)}
+                        \]  
+                        <li>Pour une base:</li>
+                        \[
+                        \alpha_{base} = \frac{1}{1+10^(pH - pK_a)}
+                        \]
+                        <li>La charge nette du peptide est ensuite:</li>
+                        \[
+                        Q(pH)= \sum \alpha_{bases}- \sum \alpha_{acides} + Q_{N_{term}} + Q_{C_{term}}
+                        \]
+                    </ul>
+                </div>
+            </div>
+
+            <div class="item_propriete">
+                <button class="propriete">Hydrophilie moyenne<span class="arrow">&#9660;</span></button>
+                <div class="explication_propriete">
+                    <p>Moyenne des valeurs d'hydrophilie de chaque acide aminé selon l'échelle de Hopp & Woods. Les valeurs négatives indiquent un caractère hydrophobe, les valeurs positives un caractère hydrophile.</p>
+                    \[
+                    H_{moy} = \frac{1}{n} \sum H_{i}
+                    \]
+                    <ul>
+                        <li>H<sub>i</sub>: indice d'hydrophilicité de chaque acide aminé</li>
+                        <li>n : longueur du peptide</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="item_propriete">
+                <button class="propriete">Coefficient d'extinction molaire<span class="arrow">&#9660;</span></button>
+                <div class="explication_propriete">
+                    <p>Mesure de l'absorption de la lumière à 280 nm. Cette valeur ne tient pas compte des éventuels ponts disulfures.</p>
+                    \[
+                    e = n_{w} \times e_{w} + n_{y} \times e_{y}
+                    \]
+                    <ul><li>e<sub>w</sub>=5690 M<sup>-1</sup>cm<sup>-1</sup></li>
+                        <li>e<sub>Y</sub>=1280 M<sup>-1</sup>cm<sup>-1</sup></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="item_propriete">
+                <button class="propriete">Solubilité estimée<span class="arrow">&#9660;</span></button>
+                <div class="explication_propriete">
+                    <p>Le score de solubilité est estimé par : </p>
+                    \[
+                    Score = (Q_{pH=7} \times 5) - P_{hydrophobes} + P_{polaires}
+                    \]
+                    <p>Veuillez noter que le résultat présenté par cet outil n'est qu'une esptimation très approximative de la solubilité dans l'eau. La solubilité d'un peptide doit être déterminée expérimentalement.</p>
+                </div>
+            </div>
+            
+
+        </div>
     </div>
 
     <script>
@@ -84,6 +174,48 @@
         if (resetBtn) {
             resetBtn.addEventListener("click",() => {
                 window.location.href = "/"
+            })
+        }
+        const proprietes = document.querySelectorAll(".propriete")
+        proprietes.forEach(propriete => {
+            propriete.addEventListener("click", () => {
+                // Si la propriété cliquée est déjà active
+                const estDejaActive = propriete.classList.contains("active")
+                
+                // Ferme toutes les propriétés
+                proprietes.forEach(item => {
+                    item.classList.remove("active")
+                    const explication = item.nextElementSibling
+                    if (explication && explication.classList.contains("explication_propriete")) {
+                        explication.classList.remove("active")
+                    }
+                })
+                
+                // Si elle n'était pas active on l'ouvre sinon tout est fermé
+                if (!estDejaActive) {
+                    propriete.classList.add("active")
+                    const explication = propriete.nextElementSibling
+                    if (explication && explication.classList.contains("explication_propriete")) {
+                        explication.classList.add("active")
+                    }
+                }
+            })
+        })
+        // cacher la description de la home page quand on submit
+        {% if stat %}
+            const descContainer = document.querySelector(".description_container")
+            if (descContainer) {
+                descContainer.style.display = "none"
+            }
+        {% endif %}
+        const submitBtn = document.querySelector(".submit_btn")
+        if (submitBtn){
+
+            submitBtn.addEventListener("click", (event)=>{
+                const descContainer= document.querySelector(".description_container")
+                if (descContainer){
+                    descContainer.style.display = "none"
+                }
             })
         }
     </script>

@@ -77,6 +77,7 @@ def masse_mol(seq_peptide, proprietes_aa, N_terminal, C_terminal):
 
     masse_mol_pep=masse_mol_tot-(len(seq_peptide)-1)*18.015 #soustraire les liaisons hydro
     masse_mol_pep=masse_mol_pep+poids_mol_N+poids_mol_C #ajout masse moléculaire des modifications N et C term
+    masse_mol_pep=round(masse_mol_pep, 2)
     return masse_mol_pep
 
 def calc_phi(seq_peptide, proprietes_aa, N_terminal, C_terminal):
@@ -183,6 +184,39 @@ def modification(N_terminal, C_terminal):
         poids_mol_C= 340
     return charge_N_term, charge_C_term, poids_mol_N, poids_mol_C
 
+def coefficient_extinction(seq_peptide):
+    coefficient_extinction=0
+    for aa in seq_peptide:
+        if aa == "W":
+            coefficient_extinction+=5690
+        elif aa == "Y":
+            coefficient_extinction+=1280
+    return coefficient_extinction
+
+def score_solubilite(seq_peptide, N_terminal, C_terminal):
+    aa_hydrophobes = 0
+    aa_polaires = 0
+    for aa in seq_peptide:
+        if aa == "A" or "V" or 'L' or 'I' or 'M' or 'F' or 'W':
+            aa_hydrophobes+=1
+        elif aa == "S" or "T" or "N" or "Q" or"K" or "R" or "D" or "E":
+            aa_polaires+=1
+    longueur_pep = len(seq_peptide)
+    pourc_hydrophobes = (aa_hydrophobes/longueur_pep)*100
+    pourc_polaires = (aa_polaires/longueur_pep)*100
+    charge_nette= charge_nette_ph_7(seq_peptide, proprietes_aa, N_terminal, C_terminal)
+    score_solubilite=(charge_nette*5)-pourc_hydrophobes+pourc_polaires
+    return score_solubilite
+def solubilite(seq_peptide, N_terminal, C_terminal):
+    score_solu=score_solubilite(seq_peptide, N_terminal, C_terminal)
+    if score_solu>100:
+        return "Excellente solubilité"
+    elif 50<score_solu<100:
+        return "Bonne solubilité"
+    elif 0<score_solu<50:
+        return "Solubilité modérée"
+    elif score_solu<0:
+        return "Faible solubilité (risque d'agrégation)"
 
 app = Flask(__name__)
 
@@ -215,7 +249,10 @@ def home():
                     "poid_mol": masse_mol(seq_peptide, proprietes_aa, N_terminal, C_terminal),
                     "phi": calc_phi(seq_peptide, proprietes_aa, N_terminal, C_terminal),
                     "charge_nette_ph_7": charge_nette_ph_7(seq_peptide, proprietes_aa, N_terminal, C_terminal),
-                    "hydro_moy": hydrophilie_moyenne(seq_peptide, proprietes_aa)
+                    "hydro_moy": hydrophilie_moyenne(seq_peptide, proprietes_aa),
+                    "coefficient_extinction": coefficient_extinction(seq_peptide),
+                    "solubilite": solubilite(seq_peptide, N_terminal, C_terminal)
+
                 }
                 valeurs_ph, charges = charge_vs_ph(seq_peptide, proprietes_aa, N_terminal, C_terminal)
 

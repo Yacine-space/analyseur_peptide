@@ -8,20 +8,24 @@ body{
     background-color: rgba(255, 253, 253, 0.753);
 }
 .container{
-    display: flex;
-    flex-direction: column;
     font-family: sans-serif;
     color: rgb(46, 46, 46);
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     margin: 30px auto 30px;
-    justify-content: center;
-    align-items: center;
+
     width: 70vmax;
     border-radius: 6px;
     border: solid 1px rgb(3, 3, 3);
     padding: 25px;
+}
+.container_form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
 }
 
 h1{
@@ -102,6 +106,85 @@ h1{
     background-color: rgb(118, 118, 118);
 }
 
+.container .description_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    max-width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+}
+
+.description_container .desc_p {
+    margin: 10px 0px 20px;
+    font-size: 1rem;
+    padding: 10px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    border: solid 1px rgb(3, 78, 148);
+}
+
+.item_propriete{
+    width: 100%;
+    padding: 5px;
+}
+
+.propriete{
+    background-color: #ecf0f1;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    border-radius: 8px;
+    border-left: 5px solid rgb(3, 78, 148);
+}
+h2{
+    margin-bottom: 5px;
+}
+.explication_propriete{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background-color: #f9f9f9;
+    padding: 0 15px;
+    border-radius: 0 0 8px 8px;
+}
+
+.explication_propriete.active{
+    max-height: 500px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+
+.explication_propriete ul{
+    list-style: disc;
+    margin: 10px 0 10px 25px;
+    padding: 0;
+}
+
+.propriete.active{
+    background-color: rgb(3, 78, 148);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.propriete .arrow {
+  float: right;
+  transition: transform 0.3s ease;
+}
+
+.propriete.active .arrow {
+  transform: rotate(180deg);
+}
+
 .pdf_btn{
     margin-top: 10px;
     align-items: center;
@@ -133,12 +216,12 @@ h1{
     height: 100%;
 }
 
-ul{
+.resultat ul{
     list-style: none;
     margin: 10px;
 }
 
-ul li{
+.resultat ul li{
     border: solid 1px rgb(3, 78, 148);
     padding: 5px;
 }

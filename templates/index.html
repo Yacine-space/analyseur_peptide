@@ -14,27 +14,27 @@
         <div class="container_form">
             <a href="/"><h1>Analyseur de peptide</h1></a>
         <form class="formulaire no-print" method="post">
-            <input type="text" id="peptid" class="peptid" name="peptid" placeholder="Entrez une sequence peptidique" value="{{ seq_peptide }}">
+            <input type="text" id="peptid" class="peptid" name="peptid" placeholder="Entrez une sequence peptidique" value="{{ sequence }}">
             <div class="modification">
                 <div class="modif_N_ter">
                     <label for="N_term">N-terminal:</label>
                     <select name="N_term" id="N-term">
-                        <option value="no_modif" {% if N_terminal == "no_modif" %}selected{% endif %}>Aucune modification</option>
-                        <option value="acetylation" {% if N_terminal == "acetylation" %}selected{% endif %}>Acétylation</option>
-                        <option value="biotine" {% if N_terminal == "biotine" %}selected{% endif %}>Biotine</option>
-                        <option value="formylation" {% if N_terminal == "formylation" %}selected{% endif %}>Formylation</option>
-                        <option value="dansyl" {% if N_terminal == "dansyl" %}selected{% endif %}>Dansyl</option>
-                        <option value="pyroglutamate"  {% if N_terminal == "pyroglutamate" %}selected{% endif %}>Pyroglutamate</option>
+                        <option value="no_modif" {% if n_terminal == "no_modif" %}selected{% endif %}>Aucune modification</option>
+                        <option value="acetylation" {% if n_terminal == "acetylation" %}selected{% endif %}>Acétylation</option>
+                        <option value="biotine" {% if n_terminal == "biotine" %}selected{% endif %}>Biotine</option>
+                        <option value="formylation" {% if n_terminal == "formylation" %}selected{% endif %}>Formylation</option>
+                        <option value="dansyl" {% if n_terminal == "dansyl" %}selected{% endif %}>Dansyl</option>
+                        <option value="pyroglutamate"  {% if n_terminal == "pyroglutamate" %}selected{% endif %}>Pyroglutamate</option>
                     </select>
                 </div>
                 <div class="modif_C_ter">
                     <label for="C_term">C-terminal:</label>
                     <select name="C_term" id="C-term">
-                        <option value="no_modif" {% if C_terminal == "no_modif" %}selected{% endif %}>Aucune modification</option>
-                        <option value="amidation" {% if C_terminal == "amidation" %}selected{% endif %}>Amidation</option>
-                        <option value="cyclisation" {% if C_terminal == "cyclisation" %}selected{% endif %}>Cyclisation</option>
-                        <option value="esterification" {% if C_terminal == "esterification" %}selected{% endif %}>Estérification</option>
-                        <option value="biotine"{% if C_terminal == "biotine" %}selected{% endif %}>Biotine</option>
+                        <option value="no_modif" {% if c_terminal == "no_modif" %}selected{% endif %}>Aucune modification</option>
+                        <option value="amidation" {% if c_terminal == "amidation" %}selected{% endif %}>Amidation</option>
+                        <option value="cyclisation" {% if c_terminal == "cyclisation" %}selected{% endif %}>Cyclisation</option>
+                        <option value="esterification" {% if c_terminal == "esterification" %}selected{% endif %}>Estérification</option>
+                        <option value="biotine"{% if c_terminal == "biotine" %}selected{% endif %}>Biotine</option>
                         
                     </select>
                 </div>

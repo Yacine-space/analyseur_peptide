@@ -1,10 +1,13 @@
 from flask import Flask, request, render_template
 from models.peptide import Peptide
+from services.prediction import AMPPredictor
 from visualisation import plot
 from config import AA_DATABASE
 import os
 
 app = Flask(__name__)
+
+predictor = AMPPredictor()
 
 @app.route('/', methods=["GET", "POST"])
 def home():
@@ -15,6 +18,7 @@ def home():
     sequence = ""
     n_terminal=""
     c_terminal=""
+
     if request.method == "POST":
         sequence= request.form.get("peptid", "").strip().upper()
         n_terminal= request.form.get("N_term", "")
@@ -22,6 +26,7 @@ def home():
 
         try:
             p = Peptide(sequence, n_terminal, c_terminal)
+            resultat_amp = predictor.predire(p)
             stat = {
                 "letter_code_1": sequence,
                 'length': p.longueur,
@@ -31,8 +36,9 @@ def home():
                 "charge_nette_ph_7": p.charge_nette_ph_7,
                 "hydro_moy": p.hydrophilie_moyenne,
                 "coefficient_extinction": p.coefficient_extinction,
-                "solubilite": p.solubilite
-
+                "solubilite": p.solubilite,
+                "amp_prediction": resultat_amp["prediction"],
+                "amp_probabilite" : resultat_amp["probabilite"]
             }
                 
             

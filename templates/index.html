@@ -56,9 +56,10 @@
             <ul>
                 <li>Code 1 lettre: <span class="list_resultat" id="code_one_letter"><strong>{{ stat.letter_code_1 }}</strong></span></li>
             </ul>
-
+            <ul>
+                <li id="grid_prediction">Prédiction AMP: <strong> <span class="list_resultat">{{ stat.amp_prediction}} ({{stat.amp_probabilite}}%)</span></strong></li>
+            </ul>
             <ul class="grid_1">
-                
                 <li id="graph"><p id= "titre_graph">Charge nette vs pH</p>{{ graph1|safe }}</li>
                 <li>Code 3 lettres:<br><br><span class="list_resultat"><strong>{{ stat.letter_code_3 }}</strong></span></li>
             </ul>
@@ -70,7 +71,6 @@
                 <li>Coefficient d'extinction: <span class="list_resultat"><strong>{{ stat.coefficient_extinction }}</strong></span> M<sup>-1</sup>cm<sup>-1</sup></li>
                 <li>Prédiction de solubilité: <span class="list_resultat"><strong>{{ stat.solubilite }}</strong></span></li>
             </ul>
-            
             <div class="graph_hydro"><p id = titre_graph>Hydorophilicité</p>{{ graph2|safe }}</div>
         </div>
     {% endif %}  
@@ -88,7 +88,50 @@
                         \]
                 </div>
             </div>
+            <div class="item_propriete">
+        <button class="propriete">Prédiction AMP<span class="arrow">&#9660;</span></button>
+        <div class="explication_propriete">
+            <p>La prédiction d'activité antimicrobienne est réalisée par un 
+            <strong>Support Vector Machine (SVM)</strong> à noyau RBF, 
+            entraîné sur un dataset de 2017 peptides AMP et 2017 peptides 
+            non-AMP issus de la base de données APD3.</p>
 
+            <h4>Features utilisées (606 au total)</h4>
+            <ul>
+                <li><strong>Propriétés physico-chimiques (6)</strong> — 
+                masse molaire, charge nette à pH 7, hydrophilicité moyenne, 
+                point isoélectrique, longueur, coefficient d'extinction</li>
+
+                <li><strong>Binary pattern N-terminal (300)</strong> — 
+                encodage one-hot des 15 premiers acides aminés 
+                (20 × 15), inspiré de Lata et al. 2007</li>
+
+                <li><strong>Binary pattern C-terminal (300)</strong> — 
+                encodage one-hot des 15 derniers acides aminés 
+                (20 × 15)</li>
+            </ul>
+
+            <h4>Performances du modèle</h4>
+            <ul>
+                <li>Accuracy : <strong>95%</strong></li>
+                <li>AUC-ROC : <strong>0.991</strong></li>
+                <li>F1-score : <strong>0.95</strong></li>
+                <li>Validation : <strong>5-fold cross-validation</strong> 
+                (0.950 ± 0.009)</li>
+            </ul>
+
+            <h4>Référence</h4>
+            <p>Lata S, Sharma BK, Raghava GPS. 
+            <em>Analysis and prediction of antibacterial peptides.</em> 
+            BMC Bioinformatics. 2007;8:263.</p>
+
+            <p><strong>Note :</strong> Ce modèle est entraîné sur des AMP 
+            eucaryotes (amphibiens, animaux, insectes, humains, plantes). 
+            La probabilité affichée reflète le score de décision du SVM 
+            et non une probabilité calibrée.</p>
+
+        </div>
+    </div>
             <div class="item_propriete">
                 <button class="propriete">Point isoélectrique (pI)<span class="arrow">&#9660;</span></button>
                 <div class="explication_propriete">

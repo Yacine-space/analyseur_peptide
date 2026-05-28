@@ -16,7 +16,8 @@ a{
     flex-direction: column;
     font-family: sans-serif;
     color: rgb(46, 46, 46);
-    background: rgba(255, 255, 255, 0.2);
+    background: #f1f7fe;
+    /*background: rgba(255, 255, 255, 0.2);*/
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     margin: 30px auto 30px;
@@ -120,7 +121,7 @@ h1{
 }
 
 .submit_btn{
-    background-color: rgb(3, 78, 148);
+    background-color: #133c67;
 }
 
 .reset_btn{
@@ -248,8 +249,8 @@ h2{
 }
 
 .resultat ul #grid_prediction{
-    border: solid 1px rgb(0, 88, 0);
-    background-color: rgba(128, 207, 128, 0.322);
+    border: solid 1px #133c67;
+    background-color: #e2eefc
 }
 
 .grid_1{

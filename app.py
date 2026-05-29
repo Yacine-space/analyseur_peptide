@@ -23,29 +23,28 @@ def home():
         sequence= request.form.get("peptid", "").strip().upper()
         n_terminal= request.form.get("N_term", "")
         c_terminal=request.form.get("C_term", "")
-
-        try:
-            p = Peptide(sequence, n_terminal, c_terminal)
-            resultat_amp = predictor.predire(p)
-            stat = {
-                "letter_code_1": sequence,
-                'length': p.longueur,
-                "letter_code_3": p.letter_code,
-                "poid_mol": p.masse_molaire,
-                "phi": p.phi,
-                "charge_nette_ph_7": p.charge_nette_ph_7,
-                "hydro_moy": p.hydrophilie_moyenne,
-                "coefficient_extinction": p.coefficient_extinction,
-                "solubilite": p.solubilite,
-                "amp_prediction": resultat_amp["prediction"],
-                "amp_probabilite" : resultat_amp["probabilite"]
-            }
-                
-            
-            graph1=plot.graphique_charge_ph(p)
-            graph2=plot.graphique_hydrophilicite(p)
-        except ValueError as e:
-            error_message = str(e)
+        if sequence != "":
+            try:
+                p = Peptide(sequence, n_terminal, c_terminal)
+                resultat_amp = predictor.predire(p)
+                stat = {
+                    "letter_code_1": sequence,
+                    'length': p.longueur,
+                    "letter_code_3": p.letter_code,
+                    "poid_mol": p.masse_molaire,
+                    "phi": p.phi,
+                    "charge_nette_ph_7": p.charge_nette_ph_7,
+                    "hydro_moy": p.hydrophilie_moyenne,
+                    "coefficient_extinction": p.coefficient_extinction,
+                    "solubilite": p.solubilite,
+                    "amp_prediction": resultat_amp["prediction"],
+                    "amp_probabilite" : resultat_amp["probabilite"]
+                }
+                    
+                graph1=plot.graphique_charge_ph(p)
+                graph2=plot.graphique_hydrophilicite(p)
+            except ValueError as e:
+                error_message = str(e)
     return render_template(
         "index.html",
         stat=stat,

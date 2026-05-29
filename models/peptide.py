@@ -3,7 +3,7 @@ from config import AA_DATABASE
 from visualisation import plot
 
 class Peptide:
-    def __init__(self, sequence, n_terminal, c_terminal):
+    def __init__(self, sequence="", n_terminal="", c_terminal=""):
         self.sequence = sequence.strip().upper()
         self.n_terminal = n_terminal
         self.c_terminal = c_terminal
